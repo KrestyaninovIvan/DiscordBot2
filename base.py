@@ -20,3 +20,8 @@ class WorkBase:
 
     def games_sum_time(self, name):
         return self.__cur.execute('SELECT game, sum(time) FROM {} GROUP BY game'.format(name)).fetchall()
+
+    def games_time_user(self, name, id, data):
+        return self.__cur.execute("SELECT game, sum(time) FROM {} WHERE userid == ? AND datetime > ? GROUP BY game".format(name),(id, data)).fetchall()
+    def games_user(self, name, id):
+        return self.__cur.execute("SELECT game, sum(time) FROM {} WHERE userid == ? GROUP BY game".format(name),(id, )).fetchall()

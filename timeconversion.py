@@ -7,14 +7,14 @@ from dateutil.relativedelta import relativedelta
 class SecondsConvert:
     __TODAY = dt.utcnow()
 
-    def __init__(self, period='0'):
-        self.__period = int(period)
-        self.data = None
+    def __init__(self, period=0):
+        self.__period = period
+        self.date = None
         self.period_out()
         self.__new_today()
 
     def period_out(self):
-        self.data = (self.__TODAY - td(days=self.__period)).date()
+        self.date = (self.__TODAY - td(days=self.__period)).date()
 
     def __new_today(self):
         self.__TODAY = dt.utcnow()

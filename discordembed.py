@@ -15,9 +15,12 @@ class DiscordEmbed:
         embed.set_footer(text=footertext, icon_url=iconurl)
         return embed
 
-    def description_emdeb(self, top_game, description, client=None):
+    def description_emdeb(self, top_game, description, day, client=None):
         tg = DataOut()
-        description += '\n'
+        if day is None or day == 0:
+            description += f'\n'
+        else:
+            description += f'за период {day} дней'
         for i in top_game:
             tg.time_update(i[1])
             if client:
