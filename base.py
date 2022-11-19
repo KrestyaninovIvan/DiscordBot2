@@ -14,3 +14,9 @@ class WorkBase:
             print('DateBase connected...OK')
         elif self.__base is None:
             print('DateBase connected...NOT OK')
+
+    def users_sum_time(self, name):
+        return self.__cur.execute('SELECT userid, sum(time) FROM {} GROUP BY userid'.format(name)).fetchall()
+
+    def games_sum_time(self, name):
+        return self.__cur.execute('SELECT game, sum(time) FROM {} GROUP BY game'.format(name)).fetchall()
