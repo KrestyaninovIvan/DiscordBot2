@@ -1,6 +1,7 @@
 import discord
 
 from discord import app_commands
+from base import WorkBase
 
 
 class MyClient(discord.Client):
@@ -14,10 +15,12 @@ class MyClient(discord.Client):
 
 client = MyClient()
 tree = app_commands.CommandTree(client)
+base = WorkBase('BOT.db')
 
 
 @tree.command(name="tap", description="tap tap", guild=discord.Object(id=1023151612644036638))
 async def self(interaction: discord.Interaction):
+    base.check_base_start()
     await interaction.response.send_message('Да-да?', ephemeral=True)
 
 
