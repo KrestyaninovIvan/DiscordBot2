@@ -1,16 +1,24 @@
-# This is a sample Python script.
+import discord
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+from discord import app_commands
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+class MyClient(discord.Client):
+    def __init__(self):
+        super().__init__(intents=discord.Intents.default())
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    async def on_ready(self):
+        await tree.sync(guild=discord.Object(id=1023151612644036638))
+        print('Online')
+
+
+client = MyClient()
+tree = app_commands.CommandTree(client)
+
+
+@tree.command(name="tap", description="tap tap", guild=discord.Object(id=1023151612644036638))
+async def self(interaction: discord.Interaction):
+    await interaction.response.send_message('Да-да?', ephemeral=True)
+
+
+client.run('MTAyMzE1Mjc5ODY2NzM5MDk5Ng.Gdxtmp.t2LRkpjCBI-3UmB-jgx3tL4xUZPWy7B9TvjM-8')
