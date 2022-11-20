@@ -15,13 +15,40 @@ class WorkBase:
         elif self.__base is None:
             print('DateBase connected...NOT OK')
 
-    def users_sum_time(self, name):
+    def user_time(self, name):
         return self.__cur.execute('SELECT userid, sum(time) FROM {} GROUP BY userid'.format(name)).fetchall()
 
-    def games_sum_time(self, name):
+    def user_time_period(self, name, period):
+        return self.__cur.execute('SELECT userid, sum(time) FROM {} GROUP BY userid'.format(name),(period )).fetchall()
+
+    def game_time(self, name):
         return self.__cur.execute('SELECT game, sum(time) FROM {} GROUP BY game'.format(name)).fetchall()
 
-    def games_time_user(self, name, id, data):
-        return self.__cur.execute("SELECT game, sum(time) FROM {} WHERE userid == ? AND datetime > ? GROUP BY game".format(name),(id, data)).fetchall()
-    def games_user(self, name, id):
+    def game_time_period(self, name, period):
+        return self.__cur.execute('SELECT game, sum(time) FROM {} WHERE datetime > ? GROUP BY game'.format(name),(period, )).fetchall()
+
+    def game_time_id_period(self, name, id, period):
+        return self.__cur.execute("SELECT game, sum(time) FROM {} WHERE userid == ? AND datetime > ? GROUP BY game".format(name),(id, period)).fetchall()
+    def game_time_id(self, name, id):
         return self.__cur.execute("SELECT game, sum(time) FROM {} WHERE userid == ? GROUP BY game".format(name),(id, )).fetchall()
+
+    def create_base(self, name):
+
+        self.__base.execute('CREATE TABLE IF NOT EXISTS {}(userid INT, count INT)'.format(name))
+        self.__base.commit()
+        self.__base.execute(
+            'CREATE TABLE IF NOT EXISTS {}(userid INT, game TEXT, datetime DATETIME, time INT)'.format(name + 'Game'))
+        self.__base.commit()
+
+    def base_update(self, name, id):
+        warning = self.__cur.execute('SELECT count FROM {} WHERE userid == ?'.format(name), (id,)).fetchone()
+        if warning is None:
+            self.__base.execute('INSERT INTO {} VALUES(?, ?)'.format(name), (id, 1))
+            self.__base.commit()
+        else:
+            self.__base.execute('UPDATE {} SET count == ? WHERE userid == ?'.format(name), (warning[1] + 1, id))
+            self.__base.commit()
+
+    def base_insert(self, name, user_id, game, time_start, game_time):
+        self.__base.execute('INSERT INTO {} VALUES(?, ?, ?, ?)'.format(name), (user_id, game, time_start, game_time))
+        self.__base.commit()
