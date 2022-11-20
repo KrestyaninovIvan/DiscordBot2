@@ -2,6 +2,7 @@ from typing import List
 import json
 import discord
 import string
+import atexit
 
 from discord import app_commands
 from discord.ext import commands
@@ -92,7 +93,6 @@ async def on_message(message):
         name = message.guild.name.replace(" ", "")
         base.base_update(name, message.author.id)
 
-
     await client.bot.process_commands(message)
     if message.author.id == 219779423904202752:  # Димин id
         if 'https://' in message.content or message.content == '':
@@ -102,11 +102,29 @@ async def on_message(message):
             embed.set_thumbnail(url=url)
             await client.get_channel(message.channel.id).send(embed=embed)
 
+
 @client.event
 async def on_ready():
     for guild in client.guilds:
         base.create_base(guild.name.replace(" ", ""))
     print('Online')
+    tables = base.fetchall
+    for table in tables:
+        for guild in client.guilds:
+            if table[1] in guild.name.replace(" ", "") + 'Game':
+                if sc.day == 1:
+                    top_game = base.execute_top_3('game', table[1], sc.months_minus, sc.data)
+
+                    url = 'https://discordhub.com/static/icons/25827c76015aa84041ac8fb6ed14bd56.jpg?q=1599333568'
+                    description = f'Топ игр c'
+                    footer_text = f'Ты втираешь мне какуе-то дич'
+                    await eb.embed_top(top_game, guild, url, description, footer_text, sc.months_minus)
+
+                    top_game = base.execute_top_3('userid', table[1], sc.months_minus, sc.data)
+                    description = f'Топ игроков c'
+                    url = 'https://images.fineartamerica.com/images/artistlogos/2-kate-green-1479756827-square.jpg'
+                    await eb.embed_top(top_game, guild, url, description, footer_text, sc.months_minus, client)
+
 
 @client.event
 async def on_member_join(member):
@@ -115,11 +133,13 @@ async def on_member_join(member):
         if ch.name == 'основной':
             await client.get_channel(ch.id).send(f'{member}, смотрите кто теперь в нашей гачи тусовке')
 
+
 @client.event
 async def on_member_remove(member):
     for ch in client.get_guild(member.guild.id).channels:
         if ch.name == 'основной':
             await client.get_channel(ch.id).send(f'{member}, теперь будет гачиться в другом месте')
+
 
 @client.event
 async def on_presence_update(before, after):
@@ -132,7 +152,21 @@ async def on_presence_update(before, after):
             user_id = before.id
             time_end = SecondsConvert()
             game_time = time_end.time_to_second(time_start)
-            base.base_insert(name, user_id, game, time_start, game_time)
+            base.database_repetition(name, user_id, game, time_start, game_time)
 
+
+def goodbye():
+    for member in client.get_all_members():
+        if member.activity is not None:
+            name = member.guild.name.replace(" ", "") + 'Game'
+            game = member.activity.name
+            time_start = member.activity.start.replace(tzinfo=None)
+            user_id = member.id
+            time_end = SecondsConvert()
+            game_time = time_end.time_to_second(time_start)
+            base.database_repetition(name, user_id, game, time_start, game_time)
+
+
+atexit.register(goodbye)
 
 client.run('MTAyMzE1Mjc5ODY2NzM5MDk5Ng.Gdxtmp.t2LRkpjCBI-3UmB-jgx3tL4xUZPWy7B9TvjM-8')

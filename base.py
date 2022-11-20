@@ -52,3 +52,12 @@ class WorkBase:
     def base_insert(self, name, user_id, game, time_start, game_time):
         self.__base.execute('INSERT INTO {} VALUES(?, ?, ?, ?)'.format(name), (user_id, game, time_start, game_time))
         self.__base.commit()
+
+    def database_repetition(self,  name, user_id, game, time_start, game_time):
+        search = self.__cur.execute("SELECT * FROM {} WHERE userid == ? AND datetime ==? GROUP BY game".format(name),
+                           (user_id, time_start)).fetchall()
+        if list(search) != 0:
+            self.__base.execute('UPDATE {} SET time == ? WHERE userid == ? AND datetime == ?'.format(name), (game_time, user_id, time_start))
+            self.__base.commit()
+        else:
+            self.base_insert(name, user_id, game, time_start, game_time)
