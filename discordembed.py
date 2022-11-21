@@ -27,7 +27,23 @@ class DiscordEmbed:
                 description += f'\t{client.get_user(i[0]).display_name} - '
             elif client is None:
                 description += f'\t{i[0]} - '
-            description += f'{tg.output_days(True)}, '
-            description += f'{tg.output_hours(True)}, '
-            description += f'{tg.output_minutes(True)}\n'
+            description += self.text_conversion(i[1], tg)
         return description
+
+    @staticmethod
+    def text_conversion(text, tg):
+        text = f'{tg.output_days(True)}, '
+        text += f'{tg.output_hours(True)}, '
+        text += f'{tg.output_minutes(True)}\n'
+        return text
+
+    def footer_emdeb(self, top_game, footer_text=None):
+        if footer_text is None:
+            all_tg = 0
+            for i in top_game:
+                all_tg += i[1]
+            tg = DataOut()
+            tg.time_update(all_tg)
+            return self.text_conversion(footer_text, tg)
+        else:
+            return footer_text

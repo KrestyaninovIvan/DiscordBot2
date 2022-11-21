@@ -3,7 +3,6 @@ from datetime import timedelta as td
 from dateutil.relativedelta import relativedelta
 
 
-
 class SecondsConvert:
     __TODAY = dt.utcnow()
 
@@ -69,41 +68,29 @@ class DataOut:
 
     def output_days(self, inscription=False):
         days = self.__time // self.__SECOND_DAY
-        if inscription:
-            if days == 1:
-                return f'День: {days}'
-            elif days % 10 in [2, 3, 4]:
-                return f'Дня: {days}'
-            else:
-                return f'Дней: {days}'
-        else:
-            return days
+        return self.inscription(inscription, days, 'День', 'Дня', 'Дней')
 
     def output_hours(self, inscription=False):
         hours = self.__time % self.__SECOND_DAY // self.__SECOND_HOUR
-        if inscription:
-            if hours == 1:
-                return f'Час: {hours}'
-            elif hours % 10 in [2, 3, 4]:
-                return f'Часа: {hours}'
-            else:
-                return f'Часов: {hours}'
-        else:
-            return hours
+        return self.inscription(inscription, hours, 'Час', 'Часа', 'Часов')
 
     def output_minutes(self, inscription=False):
         minutes = self.__time % self.__SECOND_DAY
         minutes = minutes % self.__SECOND_HOUR
         minutes = minutes // self.__SECOND_MINUTE
+        return self.inscription(inscription, minutes, 'Минуту', 'Минуты', 'Минут')
+
+    @staticmethod
+    def inscription(inscription, time, one, exception, plenty):
         if inscription:
-            if minutes == 1:
-                return f'Минуту: {minutes}'
-            elif minutes % 10 in [2, 3, 4]:
-                return f'Минуты: {minutes}'
+            if time == 1:
+                return f'{one}: {time}'
+            elif time % 10 in [2, 3, 4]:
+                return f'{exception}: {time}'
             else:
-                return f'Минут: {minutes}'
+                return f'{plenty}: {time}'
         else:
-            return minutes
+            return time
 
     def __del__(self):
         print('DataOut удален')

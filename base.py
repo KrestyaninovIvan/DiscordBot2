@@ -61,3 +61,15 @@ class WorkBase:
             self.__base.commit()
         else:
             self.base_insert(name, user_id, game, time_start, game_time)
+
+    def execute_top_3(self, plug, table, months_minus, data):
+        if plug:
+            return self.__cur.execute('SELECT game, sum(time) FROM {} WHERE datetime BETWEEN ? AND ? GROUP BY game '
+                                      'ORDER BY time DESC LIMIT 3'.format(table), (months_minus, data)).fetchall()
+        else:
+            return self.__cur.execute('SELECT userid, sum(time) FROM {} WHERE datetime BETWEEN ? AND ? GROUP BY userid '
+                                      'ORDER BY time DESC LIMIT 3'.format(table), (months_minus, data)).fetchall()
+
+    @property
+    def fetchall(self):
+        return self.__cur.fetchall()

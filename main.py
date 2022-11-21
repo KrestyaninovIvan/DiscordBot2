@@ -25,7 +25,7 @@ client = MyClient()
 tree = app_commands.CommandTree(client)
 base = WorkBase('BOT.db')
 embed = DiscordEmbed()
-guild = discord.Object(id=1023151612644036638)
+guild = discord.Object(id=218853609352331264)
 sc = SecondsConvert()
 
 
@@ -38,8 +38,8 @@ async def top(interaction: discord.Interaction, day: int = None):
         userstime = base.user_time_period(interaction.guild.name.replace(" ", "") + 'Game', period.date)
     description = embed.description_emdeb(userstime, 'За все время', day, client)
     url = 'https://discordhub.com/static/icons/25827c76015aa84041ac8fb6ed14bd56.jpg?q=1599333568'
-    text = 'Это футер'
-    newembed = embed.tree_embed(description, url, text)
+    footer_text = embed.footer_emdeb(userstime)
+    newembed = embed.tree_embed(description, url, footer_text)
     await interaction.response.send_message('Да-да?', ephemeral=True, embed=newembed)
 
 
@@ -52,8 +52,8 @@ async def statistics(interaction: discord.Interaction, day: int = None):
         timegame = base.game_time_period(interaction.guild.name.replace(" ", "") + 'Game', period.date)
     description = embed.description_emdeb(timegame, 'За все время', day)
     url = 'https://discordhub.com/static/icons/25827c76015aa84041ac8fb6ed14bd56.jpg?q=1599333568'
-    text = 'Это футер'
-    newembed = embed.tree_embed(description, url, text)
+    footer_text = embed.footer_emdeb(timegame)
+    newembed = embed.tree_embed(description, url, footer_text)
     await interaction.response.send_message('Да-да?', ephemeral=True, embed=newembed)
 
 
@@ -66,8 +66,8 @@ async def statistics_member(interaction: discord.Interaction, member: discord.Me
         gameuser = base.game_time_id_period(interaction.guild.name.replace(" ", "") + 'Game', member.id, period.date)
     description = embed.description_emdeb(gameuser, f'Пользователь **{member.name}** ', day)
     url = member.display_avatar
-    text = 'Это футер'
-    newembed = embed.tree_embed(description, url, text)
+    footer_text = embed.footer_emdeb(gameuser)
+    newembed = embed.tree_embed(description, url, footer_text)
     await interaction.response.send_message('Да-да?', ephemeral=True, embed=newembed)
 
 
@@ -81,8 +81,8 @@ async def statistics_me(interaction: discord.Interaction, day: int = None):
         gameuser = base.game_time_id_period(interaction.guild.name.replace(" ", "") + 'Game', member.id, period.date)
     description = embed.description_emdeb(gameuser, f'Пользователь **{member.name}** ', day)
     url = member.display_avatar
-    text = 'Это футер'
-    newembed = embed.tree_embed(description, url, text)
+    footer_text = embed.footer_emdeb(gameuser)
+    newembed = embed.tree_embed(description, url, footer_text)
     await interaction.response.send_message('Да-да?', ephemeral=True, embed=newembed)
 
 
@@ -108,23 +108,27 @@ async def on_ready():
     for guild in client.guilds:
         base.create_base(guild.name.replace(" ", ""))
     print('Online')
+    sc = SecondsConvert()
     tables = base.fetchall
     for table in tables:
         for guild in client.guilds:
-            if table[1] in guild.name.replace(" ", "") + 'Game':
+            if table[1] == guild.name.replace(" ", "") + 'Game':
                 if sc.day == 1:
-                    top_game = base.execute_top_3('game', table[1], sc.months_minus, sc.data)
-
+                    top_game = base.execute_top_3(True, table[1], sc.months_minus, sc.date)
+                    category = guild.categories[0]
+                    channel = category.channels[0]
+                    description = embed.description_emdeb(top_game, f'Топ игр c', 30)
                     url = 'https://discordhub.com/static/icons/25827c76015aa84041ac8fb6ed14bd56.jpg?q=1599333568'
-                    description = f'Топ игр c'
-                    footer_text = f'Ты втираешь мне какуе-то дич'
-                    await eb.embed_top(top_game, guild, url, description, footer_text, sc.months_minus)
+                    footer_text = embed.footer_emdeb(top_game)
+                    newembed = embed.tree_embed(description, url, footer_text)
+                    await client.get_channel(channel.id).send(embed=newembed)
 
-                    top_game = base.execute_top_3('userid', table[1], sc.months_minus, sc.data)
-                    description = f'Топ игроков c'
+                    top_game = base.execute_top_3(False, table[1], sc.months_minus, sc.date)
+                    description = embed.description_emdeb(top_game, f'Топ игроков', 30, client)
                     url = 'https://images.fineartamerica.com/images/artistlogos/2-kate-green-1479756827-square.jpg'
-                    await eb.embed_top(top_game, guild, url, description, footer_text, sc.months_minus, client)
-
+                    footer_text = embed.footer_emdeb(top_game)
+                    newembed = embed.tree_embed(description, url, footer_text)
+                    await client.get_channel(channel.id).send(embed=newembed)
 
 @client.event
 async def on_member_join(member):
@@ -169,4 +173,4 @@ def goodbye():
 
 atexit.register(goodbye)
 
-client.run('MTAyMzE1Mjc5ODY2NzM5MDk5Ng.Gdxtmp.t2LRkpjCBI-3UmB-jgx3tL4xUZPWy7B9TvjM-8')
+client.run('MTAyNDI5MTM1MTQ3MjM3Mzc5MA.G2Ys7n.EE4MC6icDLNvjrixhicFxVJsPXkhRQ5XSkTDv8')
