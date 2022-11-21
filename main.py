@@ -162,15 +162,16 @@ async def on_presence_update(before, after):
 def goodbye():
     for member in client.get_all_members():
         if member.activity is not None:
-            name = member.guild.name.replace(" ", "") + 'Game'
-            game = member.activity.name
-            time_start = member.activity.start.replace(tzinfo=None)
-            user_id = member.id
-            time_end = SecondsConvert()
-            game_time = time_end.time_to_second(time_start)
-            base.database_repetition(name, user_id, game, time_start, game_time)
+            if member.activity.type == discord.ActivityType.playing:
+                name = member.guild.name.replace(" ", "") + 'Game'
+                game = member.activity.name
+                time_start = member.activity.start.replace(tzinfo=None)
+                user_id = member.id
+                time_end = SecondsConvert()
+                game_time = time_end.time_to_second(time_start)
+                base.database_repetition(name, user_id, game, time_start, game_time)
 
 
 atexit.register(goodbye)
 
-client.run('MTAyNDI5MTM1MTQ3MjM3Mzc5MA.G2Ys7n.EE4MC6icDLNvjrixhicFxVJsPXkhRQ5XSkTDv8')
+client.run('MTAyNDI5MTM1MTQ3MjM3Mzc5MA.G2IrT5.5tmhSDDrkSeD6Z2yZ4J_4InL1j2B6Mg1XxTx3E')

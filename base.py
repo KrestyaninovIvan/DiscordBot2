@@ -19,18 +19,23 @@ class WorkBase:
         return self.__cur.execute('SELECT userid, sum(time) FROM {} GROUP BY userid'.format(name)).fetchall()
 
     def user_time_period(self, name, period):
-        return self.__cur.execute('SELECT userid, sum(time) FROM {} GROUP BY userid'.format(name),(period )).fetchall()
+        return self.__cur.execute('SELECT userid, sum(time) FROM {} GROUP BY userid'.format(name), (period)).fetchall()
 
     def game_time(self, name):
         return self.__cur.execute('SELECT game, sum(time) FROM {} GROUP BY game'.format(name)).fetchall()
 
     def game_time_period(self, name, period):
-        return self.__cur.execute('SELECT game, sum(time) FROM {} WHERE datetime > ? GROUP BY game'.format(name),(period, )).fetchall()
+        return self.__cur.execute('SELECT game, sum(time) FROM {} WHERE datetime > ? GROUP BY game'.format(name),
+                                  (period,)).fetchall()
 
     def game_time_id_period(self, name, id, period):
-        return self.__cur.execute("SELECT game, sum(time) FROM {} WHERE userid == ? AND datetime > ? GROUP BY game".format(name),(id, period)).fetchall()
+        return self.__cur.execute(
+            "SELECT game, sum(time) FROM {} WHERE userid == ? AND datetime > ? GROUP BY game".format(name),
+            (id, period)).fetchall()
+
     def game_time_id(self, name, id):
-        return self.__cur.execute("SELECT game, sum(time) FROM {} WHERE userid == ? GROUP BY game".format(name),(id, )).fetchall()
+        return self.__cur.execute("SELECT game, sum(time) FROM {} WHERE userid == ? GROUP BY game".format(name),
+                                  (id,)).fetchall()
 
     def create_base(self, name):
 
@@ -53,13 +58,17 @@ class WorkBase:
         self.__base.execute('INSERT INTO {} VALUES(?, ?, ?, ?)'.format(name), (user_id, game, time_start, game_time))
         self.__base.commit()
 
-    def database_repetition(self,  name, user_id, game, time_start, game_time):
+    def database_repetition(self, name, user_id, game, time_start, game_time):
         search = self.__cur.execute("SELECT * FROM {} WHERE userid == ? AND datetime ==? GROUP BY game".format(name),
-                           (user_id, time_start)).fetchall()
-        if list(search) != 0:
-            self.__base.execute('UPDATE {} SET time == ? WHERE userid == ? AND datetime == ?'.format(name), (game_time, user_id, time_start))
+                                    (user_id, time_start)).fetchall()
+
+        if list(search):
+            print(1)
+            self.__base.execute('UPDATE {} SET time == ? WHERE userid == ? AND datetime == ?'.format(name),
+                                (game_time, user_id, time_start))
             self.__base.commit()
         else:
+            print(0)
             self.base_insert(name, user_id, game, time_start, game_time)
 
     def execute_top_3(self, plug, table, months_minus, data):
